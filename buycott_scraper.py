@@ -5,12 +5,10 @@ import requests
 from bs4 import BeautifulSoup
 
 
-print("Buycott scraper called")
-
-
 class BuycottScraper:
     def __init__(self, code):
-        self.product = { "code": code.decode("utf-8")}
+        print("Buycott scraper called")
+        self.product = {"code": code.decode("utf-8")}
         self.url = "https://www.buycott.com/upc"
         self.wanted_infos = ("Brand", "Manufacturer", "Country")
         self.soup = ""
