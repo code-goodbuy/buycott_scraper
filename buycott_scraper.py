@@ -2,19 +2,21 @@
 # *_* coding: utf-8 *_*
 
 import requests
+from datetime import datetime, timezone
+
 from bs4 import BeautifulSoup
 
 
 class BuycottScraper:
     def __init__(self, code):
         print("Buycott scraper called")
-        self.product = {"code": code.decode("utf-8")}
+        self.product = {"barcode": code.decode("utf-8")}
         self.url = "https://www.buycott.com/upc"
         self.wanted_infos = ("Brand", "Manufacturer", "Country")
         self.soup = ""
 
     def get_soup(self):
-        url = self.url + "/" + self.product["code"] + "/"
+        url = self.url + "/" + self.product["barcode"] + "/"
         response = requests.get(url)
         soup = BeautifulSoup(response.content, "html.parser")
         return soup
@@ -38,6 +40,13 @@ class BuycottScraper:
     def get_product_image(self, soup):
         return soup.find("img").attrs["src"]
 
+    def set_time(self):
+        dt = datetime.now(timezone.utc)
+        utc_time = dt.replace(tzinfo=timezone.utc)
+        utc_timestamp = utc_time.timestamp()
+        timestamp_str = dt.strftime("%d-%b-%Y (%H:%M:%S.%f)")
+        return utc_timestamp, timestamp_str
+
     def scrape(self):
         soup = self.get_soup()
         self.product["name"] = self.get_product_name(soup)
@@ -46,4 +55,6 @@ class BuycottScraper:
             list=self.pars_info_table(self.product_info_table(soup))
         )
         self.product["state"] = "306"
+        self.product["utc_time"], self.product["created_at"] = self.set_time()
+        self.product["source"] = "buycott"
         return self.product
