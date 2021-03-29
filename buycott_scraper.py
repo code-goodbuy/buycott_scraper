@@ -22,7 +22,10 @@ class BuycottScraper:
         return soup
 
     def get_product_name(self, soup):
-        return soup.find("h2").text
+        try:
+            return soup.find("h2").text
+        except Exception as e:
+            print("Can't find name. Error: ", str(e))
 
     def product_info_table(self, soup):
         return soup.find("table", attrs={"class": "table product_info_table"})
