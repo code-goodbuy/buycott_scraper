@@ -4,9 +4,10 @@ from buycott_scraper import BuycottScraper
 
 
 def main():
-    credentials = pika.PlainCredentials(os.environ['RABBITMQ_USER'], os.environ['RABBITMQ_USER_PW'])
+    credentials = pika.PlainCredentials(os.getenv('RABBITMQ_USER'), os.getenv('RABBITMQ_USER_PW'))
     connection = pika.BlockingConnection(pika.ConnectionParameters(
-        host=os.environ['RABBITMQ_DEV_HOST'],
+        host=os.getenv('RABBITMQ_DEV_HOST'),
+        port=os.getenv('RABBITMQ_PORT'),
         credentials=credentials))
     channel = connection.channel()
 
