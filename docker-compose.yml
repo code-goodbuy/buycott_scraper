@@ -11,3 +11,15 @@ services:
     container_name: buycott_scraper
     command: "python -u receive_barcode.py" # The flag -u give unbuffered output, in order to see logs from python script
     restart: unless-stopped
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    environment:
+      - WATCHTOWER_CLEANUP="true"
+      - TZ=Europe/Berlin
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/config.json
+    command: --interval 30 --debug --cleanup
+    depends_on:
+      - scraper
