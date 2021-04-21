@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-import pika, sys, os, json, pymongo
+import json
+import os
+import pika
+import pymongo
+import sys
+
 from buycott_scraper import BuycottScraper
 
 
@@ -26,16 +31,24 @@ def main():
     def callback(ch, method, properties, code):
         print(f" [!] Received {code} \n Starting Scraper... ")
         scraper = BuycottScraper(code)
-        product = scraper.scrape()
-        print("Scraped New Product:\n", json.dumps(product, indent=4, sort_keys=True))
+        try:
+            product = scraper.scrape()
+            print("Scraped New Product:\n", json.dumps(product, indent=4, sort_keys=True))
+        except Exception as e:
+            print("Product scraping failed. Error: ", str(e))
+            channel.basic_reject(delivery_tag=method.delivery_tag, requeue=False)
+            return None
+
         try:
             db = connect_db()
             save_product(db, product)
+            channel.basic_ack(delivery_tag=method.delivery_tag)
         except Exception as e:
             print(f"Error while saving product {str(e)}")
+            channel.basic_reject(delivery_tag=method.delivery_tag, requeue=True)
         print(' [*] Waiting for messages. To exit press CTRL+C')
 
-    channel.basic_consume(queue='buycott', on_message_callback=callback, auto_ack=True)
+    channel.basic_consume(queue='buycott', on_message_callback=callback, auto_ack=False)
 
     print(' [*] Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()
