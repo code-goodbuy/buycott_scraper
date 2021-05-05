@@ -5,9 +5,9 @@ name: Python application Buycott-Scraper
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ dev, main ]
   pull_request:
-    branches: [ master ]
+    branches: [ dev, main ]
 
 jobs:
   build:
