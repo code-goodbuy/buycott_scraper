@@ -1,0 +1,25 @@
+version: "3"
+services:
+  scraper:
+    image: asherrill/buycott_scraper:${TAG}
+    environment:
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_USER_PW=${RABBITMQ_USER_PW}
+      - RABBITMQ_DEV_HOST=${RABBITMQ_DEV_HOST}
+      - RABBITMQ_PORT=${RABBITMQ_PORT}
+      - MONGODB_DEV_URI=${MONGODB_DEV_URI}
+    container_name: buycott_scraper
+    command: "python -u receive_barcode.py" # The flag -u give unbuffered output, in order to see logs from python script
+    restart: unless-stopped
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    environment:
+      - WATCHTOWER_CLEANUP="true"
+      - TZ=Europe/Berlin
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/config.json
+    command: --interval 30 --debug --cleanup
+    depends_on:
+      - scraper
