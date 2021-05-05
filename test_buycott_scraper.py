@@ -28,20 +28,20 @@ class TestBuycottScraper(unittest.TestCase):
         self.assertIsInstance(self.buycott_scraper, BuycottScraper)
         self.assertIsInstance(self.buycott_scraper.product, dict)
         self.assertIsInstance(self.buycott_scraper.product["ean"], int)
-        self.assertEqual(self.buycott_scraper.product["ean"], 7622300336738)
+        assert self.buycott_scraper.product["ean"] == 7622300336738
 
     def test_get_soup(self):
         self.bs4_soup = self.buycott_scraper.get_soup()
-        self.assertIsInstance(self.bs4_soup, bs4.BeautifulSoup)
+        assert isinstance(self.bs4_soup, bs4.BeautifulSoup)
 
     def test_get_product_name(self):
         name = self.buycott_scraper.get_product_name(self.bs4_soup)
-        self.assertIsInstance(name, str)
-        self.assertEqual(name, "Oreo Original")
+        assert isinstance(name, str)
+        assert name == "Oreo Original"
 
     def test_product_info_table(self):
         self.soup_list = self.buycott_scraper.product_info_table(self.bs4_soup)
-        self.assertIsInstance(self.soup_list, bs4.element.Tag)
+        assert isinstance(self.soup_list, bs4.element.Tag)
 
     def test_get_product_brand(self):
         brand_name = self.buycott_scraper.get_product_brand(
@@ -49,21 +49,18 @@ class TestBuycottScraper(unittest.TestCase):
                 self.buycott_scraper.product_info_table(self.bs4_soup)
             )
         )
-        self.assertIsInstance(brand_name, str)
-        self.assertEqual(brand_name, "Oreo")
+        assert isinstance(brand_name, str)
+        assert brand_name == "Oreo"
 
     def test_get_product_image(self):
         img_url = self.buycott_scraper.get_product_image(self.bs4_soup)
-        self.assertIsInstance(img_url, str)
-        self.assertEqual(
-            img_url,
-            "https://s3.amazonaws.com/buycott/images/attachments/000/860/544/w_thumb/d3c9cd5075828624da156ddbcf2c8df3?1398459580",
-        )
+        assert isinstance(img_url, str)
+        assert img_url == "https://s3.amazonaws.com/buycott/images/attachments/000/860/544/w_thumb/d3c9cd5075828624da156ddbcf2c8df3?1398459580"
 
     def test_scrape(self):
         product = self.buycott_scraper.scrape()
-        self.assertIsInstance(product, dict)
-        self.assertEqual(product["name"], "Oreo Original")
+        assert isinstance(product, dict)
+        assert product["name"] == "Oreo Original"
 
 
 if __name__ == "__main__":
