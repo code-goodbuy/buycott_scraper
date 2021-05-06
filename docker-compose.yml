@@ -10,7 +10,12 @@ services:
       - MONGODB_DEV_URI=${MONGODB_DEV_URI}
     container_name: buycott_scraper
     command: "python -u receive_barcode.py" # The flag -u give unbuffered output, in order to see logs from python script
-    restart: unless-stopped
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower
