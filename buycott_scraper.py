@@ -17,7 +17,7 @@ class BuycottScraper:
             "user": "60905172b52cca811ac73ad7",
             "verified": True,
             "updated_at": "",
-            "corporation": {"name": ""},
+            "corporation": "",
             "scraper_info": {"source": "buycott"},
         }
         self.url = "https://www.buycott.com"
@@ -63,11 +63,9 @@ class BuycottScraper:
     def scrape(self):
         soup = self.get_soup()
         self.product["name"] = self.get_product_name(soup)
-        self.product["brand"] = {
-            "name": self.get_product_brand(
+        self.product["brand"] = self.get_product_brand(
                 soup_list=self.pars_info_table(self.product_info_table(soup))
-            ),
-        }
+            )
         self.product["utc_time"], self.product["created_at"] = self.set_time()
         self.product["scraped_image"] = self.get_product_image(soup)
         return self.product
